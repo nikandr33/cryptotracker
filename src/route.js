@@ -1,12 +1,14 @@
 import React from 'react';
 import { createHashHistory } from "history";
-import { Router, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import ReactPixel from "react-facebook-pixel";
+import { connect } from "react-redux";
 
 import AuthLayout from "./layouts/Auth/Auth.jsx";
 import AdminLayout from "./layouts/Admin/Admin.jsx";
 
 import fire from "./fire.js";
+
 
 class Rootrouter extends React.Component {
     constructor(props) {
@@ -22,13 +24,10 @@ class Rootrouter extends React.Component {
 
     authListener() {
         fire.auth().onAuthStateChanged((user) => {
-            //console.log(user);
             if(user) {
                 this.setState({ user });
-                localStorage.setItem("uid", user.uid);
             } else {
                 this.setState({ user: null });
-                localStorage.removeItem("uid");
             }
         });
     }
@@ -44,22 +43,14 @@ class Rootrouter extends React.Component {
             ReactPixel.pageView();
             ReactPixel.fbq("track", "PageView");
         });
-
-        const checkAuth = () => {
-            const token = localStorage.getItem('uid');
-            if(token) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        const { auth } = this.props;
 
         const PrivateRoute = ({ component: Component, ...rest }) => (
             
             <Route
                 {...rest}
                 render={props =>
-                    checkAuth() ? (
+                    !auth.isEmpty ? (
                         <Component {...props} />
                     ) : (
                         <Redirect
@@ -74,7 +65,7 @@ class Rootrouter extends React.Component {
             <Route
                 {...rest}
                 render={props =>
-                    checkAuth() ? (
+                    !auth.isEmpty ? (
                         <Redirect
                         to="/admin/dashboard"
                         />
@@ -107,4 +98,10 @@ class Rootrouter extends React.Component {
     }
 }
 
-export default Rootrouter;
+const mapStateToProps = (state) => {
+    return {
+        auth: state.firebase.auth
+    }
+}
+
+export default connect(mapStateToProps)(Rootrouter);

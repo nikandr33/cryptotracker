@@ -20,8 +20,8 @@ class NewsList extends React.Component {
             return (
             <div className="typography-line" key={i}>
                 <h2 className="d-flex align-items-center justify-content-between">
-                  <div className="col-2"><a href={item.url} target="_blank"><img src={item.imageurl} width="125px" alt=""/></a></div>
-                  <div className="col-10"><small><a href={item.url} target="_blank" ><p className="news-link">{item.title}</p></a></small></div>
+                  <div className="col-2"><a href={item.url} rel="noopener noreferrer" target="_blank"><img src={item.imageurl} width="125px" alt=""/></a></div>
+                  <div className="col-10"><small><a href={item.url} rel="noopener noreferrer" target="_blank" ><p className="news-link">{item.title}</p></a></small></div>
                 </h2>
               </div>
             );

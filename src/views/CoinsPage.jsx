@@ -2,7 +2,6 @@ import React from "react";
 
 import axios from "axios";
 
-import CoinsList from "./CoinsList";
 import CoinsTable from "./CoinsTable";
 
 // reactstrap components
@@ -11,7 +10,6 @@ import {
   CardHeader,
   CardBody,
   CardTitle,
-  Table,
   Row,
   Col
 } from "reactstrap";

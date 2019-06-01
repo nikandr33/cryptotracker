@@ -22,7 +22,8 @@ import {
 
 import { Link } from "react-router-dom";
 
-import fire from "../../fire.js";
+import { connect } from "react-redux";
+import { signOut } from "../../store/actions/authActions";
 
 class AdminNavbar extends React.Component {
   constructor(props) {
@@ -73,10 +74,6 @@ class AdminNavbar extends React.Component {
       modalSearch: !this.state.modalSearch
     });
   };
-
-  logout() {
-    fire.auth().signOut();
-  }
 
   render() {
     return (
@@ -162,7 +159,7 @@ class AdminNavbar extends React.Component {
                       </NavLink>
                     <DropdownItem divider tag="li" />
                     <NavLink tag="li">
-                      <DropdownItem onClick={this.logout} className="nav-item">Log out</DropdownItem>
+                      <DropdownItem onClick={this.props.signOut} className="nav-item">Log out</DropdownItem>
                     </NavLink>
                   </DropdownMenu>
                 </UncontrolledDropdown>
@@ -194,4 +191,10 @@ class AdminNavbar extends React.Component {
   }
 }
 
-export default AdminNavbar;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    signOut: () => dispatch(signOut())
+  }
+}
+
+export default connect(null, mapDispatchToProps)(AdminNavbar);

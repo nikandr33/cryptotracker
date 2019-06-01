@@ -4216,7 +4216,7 @@ button.close {
   flex-direction: column;
   width: 100%;
   pointer-events: auto;
-  background-color: #ffffff;
+  background-color: #27293d;
   background-clip: padding-box;
   border: 1px solid rgba(34, 42, 66, 0.2);
   border-radius: 0.2857rem;
@@ -10839,7 +10839,7 @@ textarea.form-control {
       margin-top: 5px;
       margin-bottom: 0; }
     .modal-content .modal-header .modal-title {
-      color: #222a42; }
+      color: #fff; }
     .modal-content .modal-header i.tim-icons {
       font-size: 16px; }
   .modal-content .modal-body {
@@ -10918,7 +10918,7 @@ textarea.form-control {
     background-color: #1d8cf8; }
 
 .modal.modal-default .modal-content {
-  background-color: #ffffff;
+  background-color: #27293d;
   color: #222a42; }
 
 .modal.modal-default .modal-body p {

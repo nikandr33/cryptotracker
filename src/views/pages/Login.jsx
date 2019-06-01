@@ -9,7 +9,6 @@ import {
   CardFooter,
   CardTitle,
   Form,
-  Input,
   InputGroupAddon,
   InputGroupText,
   InputGroup,
@@ -19,27 +18,21 @@ import {
 
 import { Link } from "react-router-dom";
 
-import fire from "../../fire.js";
+import { connect } from "react-redux";
+import { signIn } from "../../store/actions/authActions";
 
 class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       email: '',
-      password: '',
-      error: ''
+      password: ''
     }
   }
 
   login(e) {
     e.preventDefault();
-    fire.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-    .then((res) => { 
-      this.props.history.push("/");
-    })
-    .catch((err) => {
-      this.setState({ error: err.message })
-    });
+    this.props.signIn(this.state);
   }
 
   handleChange(e) {
@@ -53,6 +46,7 @@ class Login extends React.Component {
     document.body.classList.toggle("login-page");
   }
   render() {
+    const { signInError } = this.props; 
     return (
       <>
         <div className="content">
@@ -98,7 +92,7 @@ class Login extends React.Component {
                           onChange={e => this.handleChange(e)}
                       />
                     </InputGroup>
-                    <span className="text-danger font-weight-bold">{this.state.error}</span>
+                    {signInError ? <span className="text-danger font-weight-bold">{signInError.message}</span> : null}
                   </CardBody>
                   <CardFooter>
                     <Button
@@ -142,4 +136,16 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+const mapStateToProps = (state) => {
+  return {
+    signInError: state.auth.signInError
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    signIn: (creds) => dispatch(signIn(creds))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

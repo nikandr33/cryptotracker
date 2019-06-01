@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import classNames from "classnames";
 // react component for creating dynamic tables
 import ReactTable from "react-table";
 import {
@@ -8,8 +7,7 @@ import {
   CardHeader,
   CardTitle,
   Row,
-  Col,
-  Button
+  Col
 } from "reactstrap";
 
 const dataTable = [

@@ -12,6 +12,9 @@ import CoinsPage from "./views/CoinsPage.jsx";
 import NewsPage from "./views/NewsPage.jsx";
 import Portfolio from "./views/Portfolio.jsx";
 import Settings from "./views/Settings.jsx";
+import Login from "./views/pages/Login.jsx";
+import Register from "./views/pages/Register.jsx";
+
 
 const routes = [
   {
@@ -48,6 +51,20 @@ const routes = [
     icon: "tim-icons icon-settings-gear-63",
     component: Settings,
     layout: "/admin"
+  },
+  {
+    path: "/login",
+    name: "Settings",
+    icon: "tim-icons icon-settings-gear-63",
+    component: Login,
+    layout: "/auth"
+  },
+  {
+    path: "/register",
+    name: "Settings",
+    icon: "tim-icons icon-settings-gear-63",
+    component: Register,
+    layout: "/auth"
   },
   {
     collapse: true,

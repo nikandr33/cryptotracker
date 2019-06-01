@@ -94,26 +94,27 @@ class Sidebar extends React.Component {
           </li>
         );
       }
-      return (
-        <li className={this.activeRoute(prop.layout + prop.path)} key={key}>
-          <NavLink to={prop.layout + prop.path} activeClassName="" onClick={this.props.closeSidebar}>
-            {prop.icon !== undefined ? (
-              <>
-                <i className={prop.icon} />
-                <p>{rtlActive ? prop.rtlName : prop.name}</p>
-              </>
-            ) : (
-              <>
-                <span className="sidebar-mini-icon">
-                  {rtlActive ? prop.rtlMini : prop.mini}
-                </span>
-                <span className="sidebar-normal">
-                  {rtlActive ? prop.rtlName : prop.name}
-                </span>
-              </>
-            )}
-          </NavLink>
-        </li>
+      if(prop.path !== "/register" && prop.path !== "/login")
+        return (
+          <li className={this.activeRoute(prop.layout + prop.path)} key={key}>
+            <NavLink to={prop.layout + prop.path} activeClassName="" onClick={this.props.closeSidebar}>
+              {prop.icon !== undefined ? (
+                <>
+                  <i className={prop.icon} />
+                  <p>{rtlActive ? prop.rtlName : prop.name}</p>
+                </>
+              ) : (
+                <>
+                  <span className="sidebar-mini-icon">
+                    {rtlActive ? prop.rtlMini : prop.mini}
+                  </span>
+                  <span className="sidebar-normal">
+                    {rtlActive ? prop.rtlName : prop.name}
+                  </span>
+                </>
+              )}
+            </NavLink>
+          </li>
       );
     });
   };
