@@ -1,22 +1,22 @@
 const initState = {
-    portfolio: []
+    coins: []
 }
 
-const portfoliosReducer = (state = initState, action) => {
+const coinsReducer = (state = initState, action) => {
     switch(action.type) {
-        case 'CREATE_PORTFOLIO':
+        case 'ADD_COIN':
             return state;
-        case 'CREATE_PROJECT_ERROR':
+        case 'ADD_COIN_ERROR':
             console.log(action.err)
             return state;
-        case 'UPDATE_PORTFOLIO':
+        case 'UPDATE_COIN':
             return state;
-        case 'UPDATE_PROJECT_ERROR':
+        case 'UPDATE_COIN_ERROR':
             console.log(action.err)
             return state;
-        case 'DELETE_PORTFOLIO':
+        case 'DELETE_COIN':
             return state;
-        case 'DELETE_PORTFOLIO_ERROR':
+        case 'DELETE_COIN_ERROR':
             console.log(action.err)
             return state;
         default:
@@ -24,4 +24,4 @@ const portfoliosReducer = (state = initState, action) => {
     }
 }
 
-export default portfoliosReducer;
+export default coinsReducer;

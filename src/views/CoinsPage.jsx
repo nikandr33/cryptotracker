@@ -27,7 +27,7 @@ class CoinsPage extends React.Component {
     this.setState({
       coinsData: data,
       isLoading: false
-    });
+    }, () => console.log(this.state.coinsData));
   }
 
   showCoinsData() {

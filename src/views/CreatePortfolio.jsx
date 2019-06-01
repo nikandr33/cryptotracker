@@ -74,8 +74,8 @@ class CreatePortfolio extends React.Component {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-      createPortfolio: (portfolio) => dispatch(createPortfolio(portfolio))
+        createPortfolio: (portfolio) => dispatch(createPortfolio(portfolio))
     }
-  }
+}
 
 export default connect(null, mapDispatchToProps)(CreatePortfolio);

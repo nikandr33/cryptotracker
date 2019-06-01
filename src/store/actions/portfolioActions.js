@@ -14,3 +14,30 @@ export const createPortfolio = (portfolio) => {
         })
     }
 }
+
+export const deletePortfolio = (portfolioId) => {
+    return (dispatch, getState, { getFirebase, getFirestore }) => {
+        const firestore = getFirestore();
+
+        firestore.collection("portfolio").doc(portfolioId).delete().then(() => {
+            dispatch({ type: "DELETE_PORTFOLIO" });
+        }).catch((err) => {
+            dispatch({ type: "DELETE_PORTFOLIO_ERROR", err });
+        })
+    }
+}
+
+export const changePortfolio = (portfolioId, {name, desc}) => {
+    return (dispatch, getState, { getFirebase, getFirestore }) => {
+        const firestore = getFirestore();
+
+        firestore.collection("portfolio").doc(portfolioId).update({
+            name: name,
+            desc: desc
+        }).then(() => {
+            dispatch({ type: "UPDATE_PORTFOLIO" });
+        }).catch((err) => {
+            dispatch({ type: "UPDATE_PORTFOLIO_ERROR", err });
+        })
+    }
+}
