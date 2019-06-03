@@ -1,9 +1,9 @@
 // ##############################
 // // // Chart variables
 // #############################
-
+import axios from "axios"
 // chartExample1 and chartExample2 options
-let chart_1_2_3_options = {
+export const chart_1_2_3_options = {
   maintainAspectRatio: false,
   legend: {
     display: false
@@ -52,11 +52,69 @@ let chart_1_2_3_options = {
     ]
   }
 };
+let data1dArr = [];
+let date1dArr = [];
+
+const getData1d = () => {
+  axios.all([axios.get("https://min-api.cryptocompare.com/data/histohour?fsym=BTC&tsym=USD&limit=25")]
+  ).then((res) => {
+    res[0].data.Data.map((item) => {
+      let date = new Date(item.time * 1000)
+      let hour = date.getHours();
+      hour = hour < 10 ? "0" + hour.toString() + ":00" : hour.toString() + ":00";
+      date1dArr.push(hour)
+      data1dArr.push(item.close)
+    })
+    date1dArr.splice(-2,2)
+  })
+}
+
+getData1d();
+
+let data7dArr = [];
+let date7dArr = [];
+
+const getData7d = () => {
+  axios.all([axios.get("https://min-api.cryptocompare.com/data/histoday?fsym=BTC&tsym=USD&limit=6")]
+  ).then((res) => {
+    res[0].data.Data.map((item) => {
+      let date = new Date(item.time * 1000)
+      let day = date.getDate();
+      let month = date.getMonth() + 1;
+      day = day < 10 ? "0" + day.toString() : day.toString();
+      month = month < 10 ? "0" + month.toString() : month.toString();
+      date7dArr.push(day + "." + month)
+      data7dArr.push(item.close)
+    })
+  })
+}
+
+getData7d();
+
+let data30dArr = [];
+let date30dArr = [];
+
+const getData30d = () => {
+  axios.all([axios.get("https://min-api.cryptocompare.com/data/histoday?fsym=BTC&tsym=USD&limit=29")]
+  ).then((res) => {
+    res[0].data.Data.map((item) => {
+      let date = new Date(item.time * 1000)
+      let day = date.getDate();
+      let month = date.getMonth() + 1;
+      day = day < 10 ? "0" + day.toString() : day.toString();
+      month = month < 10 ? "0" + month.toString() : month.toString();
+      date30dArr.push(day + "." + month)
+      data30dArr.push(item.close)
+    })
+  })
+}
+
+getData30d();
 
 // #########################################
 // // // used inside src/views/Dashboard.jsx
 // #########################################
-let chartExample1 = {
+export const chartExample1 = {
   data1: canvas => {
     let ctx = canvas.getContext("2d");
 
@@ -67,23 +125,10 @@ let chartExample1 = {
     gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
 
     return {
-      labels: [
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY",
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC"
-      ],
+      labels: date1dArr,
       datasets: [
         {
-          label: "My First dataset",
+          label: "Bitcoin Price",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: "#1f8ef1",
@@ -97,7 +142,7 @@ let chartExample1 = {
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
           pointRadius: 4,
-          data: [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100]
+          data: data1dArr,
         }
       ]
     };
@@ -112,23 +157,10 @@ let chartExample1 = {
     gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
 
     return {
-      labels: [
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY",
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC"
-      ],
+      labels: date7dArr,
       datasets: [
         {
-          label: "My First dataset",
+          label: "Bitcoin Price",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: "#1f8ef1",
@@ -142,7 +174,7 @@ let chartExample1 = {
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
           pointRadius: 4,
-          data: [80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120]
+          data: data7dArr
         }
       ]
     };
@@ -157,23 +189,10 @@ let chartExample1 = {
     gradientStroke.addColorStop(0, "rgba(29,140,248,0)"); //blue colors
 
     return {
-      labels: [
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY",
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC"
-      ],
+      labels: date30dArr,
       datasets: [
         {
-          label: "My First dataset",
+          label: "Bitcoin Price",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: "#1f8ef1",
@@ -187,7 +206,7 @@ let chartExample1 = {
           pointHoverRadius: 4,
           pointHoverBorderWidth: 15,
           pointRadius: 4,
-          data: [60, 80, 65, 130, 80, 105, 90, 130, 70, 115, 60, 130]
+          data: data30dArr
         }
       ]
     };
@@ -198,7 +217,7 @@ let chartExample1 = {
 // #########################################
 // // // used inside src/views/Dashboard.jsx
 // #########################################
-let chartExample2 = {
+export const chartExample2 = {
   data: canvas => {
     let ctx = canvas.getContext("2d");
 
@@ -237,7 +256,7 @@ let chartExample2 = {
 // #########################################
 // // // used inside src/views/Dashboard.jsx
 // #########################################
-let chartExample3 = {
+export const chartExample3 = {
   data: canvas => {
     let ctx = canvas.getContext("2d");
 
@@ -316,7 +335,7 @@ let chartExample3 = {
 // #########################################
 // // // used inside src/views/Dashboard.jsx
 // #########################################
-const chartExample4 = {
+export const chartExample4 = {
   data: canvas => {
     let ctx = canvas.getContext("2d");
 
@@ -403,7 +422,7 @@ const chartExample4 = {
 // #########################################
 // // // used inside src/views/Charts.jsx
 // #########################################
-const chartExample5 = {
+export const chartExample5 = {
   data: canvas => {
     let ctx = canvas.getContext("2d");
     var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -488,7 +507,7 @@ const chartExample5 = {
 // #########################################
 // // // used inside src/views/Charts.jsx
 // #########################################
-const chartExample6 = {
+export const chartExample6 = {
   data: canvas => {
     let ctx = canvas.getContext("2d");
     var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -572,7 +591,7 @@ const chartExample6 = {
 // #########################################
 // // // used inside src/views/Charts.jsx
 // #########################################
-const chartExample7 = {
+export const chartExample7 = {
   data: canvas => {
     let ctx = canvas.getContext("2d");
     var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -647,7 +666,7 @@ const chartExample7 = {
 // #########################################
 // // // used inside src/views/Charts.jsx
 // #########################################
-const chartExample8 = {
+export const chartExample8 = {
   data: {
     labels: ["JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
     datasets: [
@@ -726,7 +745,7 @@ const chartExample8 = {
 // #########################################
 // // // used inside src/views/Charts.jsx
 // #########################################
-const chartExample9 = {
+export const chartExample9 = {
   data: {
     labels: [1, 2],
     datasets: [
@@ -792,7 +811,7 @@ const chartExample9 = {
 // #########################################
 // // // used inside src/views/Charts.jsx
 // #########################################
-const chartExample10 = {
+export const chartExample10 = {
   data: {
     labels: [1, 2, 3],
     datasets: [
@@ -851,17 +870,4 @@ const chartExample10 = {
       ]
     }
   }
-};
-
-module.exports = {
-  chartExample1, // in src/views/Dashboard.jsx
-  chartExample2, // in src/views/Dashboard.jsx
-  chartExample3, // in src/views/Dashboard.jsx
-  chartExample4, // in src/views/Dashboard.jsx
-  chartExample5, // in src/views/Charts.jsx
-  chartExample6, // in src/views/Charts.jsx
-  chartExample7, // in src/views/Charts.jsx
-  chartExample8, // in src/views/Charts.jsx
-  chartExample9, // in src/views/Charts.jsx
-  chartExample10 // in src/views/Charts.jsx
 };

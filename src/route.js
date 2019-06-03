@@ -1,6 +1,6 @@
 import React from 'react';
 import { createHashHistory } from "history";
-import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import { Router, Route, Switch, Redirect } from "react-router-dom";
 import ReactPixel from "react-facebook-pixel";
 import { connect } from "react-redux";
 

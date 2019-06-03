@@ -1,5 +1,9 @@
 import React from "react";
 
+import fire from "../fire"
+
+import { connect } from "react-redux";
+
 // reactstrap components
 import {
   Button,
@@ -25,38 +29,7 @@ class ValidationForms extends React.Component {
       registerConfirmPassword: "",
       registerEmailState: "",
       registerPasswordState: "",
-      registerConfirmPasswordState: "",
-      // login form
-      loginFullName: "",
-      loginEmail: "",
-      loginPassword: "",
-      loginFullNameState: "",
-      loginEmailState: "",
-      loginPasswordState: "",
-      // type validation form
-      required: "",
-      email: "",
-      number: "",
-      url: "",
-      source: "",
-      destination: "",
-      requiredState: "",
-      emailState: "",
-      numberState: "",
-      urlState: "",
-      sourceState: "",
-      destinationState: "",
-      // range validation form
-      minLength: "",
-      maxLength: "",
-      range: "",
-      min: "",
-      max: "",
-      minLengthState: "",
-      maxLengthState: "",
-      rangeState: "",
-      minState: "",
-      maxState: ""
+      registerConfirmPasswordState: ""
     };
   }
   // function that returns true if value is email, false otherwise
@@ -81,24 +54,12 @@ class ValidationForms extends React.Component {
     }
     return false;
   };
-  // function that verifies if value contains only numbers
-  verifyNumber = value => {
-    var numberRex = new RegExp("^[0-9]+$");
-    if (numberRex.test(value)) {
-      return true;
-    }
-    return false;
-  };
-  // verifies if value is a valid URL
-  verifyUrl = value => {
-    try {
-      new URL(value);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  };
-  change = (event, stateName, type, stateNameEqualTo, maxValue) => {
+
+  componentWillMount() {
+    this.setState({ registerEmail: this.props.auth.email })
+  }
+
+  change = (event, stateName, type, stateNameEqualTo) => {
     switch (type) {
       case "email":
         if (this.verifyEmail(event.target.value)) {
@@ -108,7 +69,7 @@ class ValidationForms extends React.Component {
         }
         break;
       case "password":
-        if (this.verifyLength(event.target.value, 1)) {
+        if (this.verifyLength(event.target.value, 6)) {
           this.setState({ [stateName + "State"]: "has-success" });
         } else {
           this.setState({ [stateName + "State"]: "has-danger" });
@@ -123,74 +84,12 @@ class ValidationForms extends React.Component {
           this.setState({ [stateNameEqualTo + "State"]: "has-danger" });
         }
         break;
-      case "number":
-        if (this.verifyNumber(event.target.value)) {
-          this.setState({ [stateName + "State"]: "has-success" });
-        } else {
-          this.setState({ [stateName + "State"]: "has-danger" });
-        }
-        break;
-      case "length":
-        if (this.verifyLength(event.target.value, stateNameEqualTo)) {
-          this.setState({ [stateName + "State"]: "has-success" });
-        } else {
-          this.setState({ [stateName + "State"]: "has-danger" });
-        }
-        break;
-      case "max-length":
-        if (!this.verifyLength(event.target.value, stateNameEqualTo + 1)) {
-          this.setState({ [stateName + "State"]: "has-success" });
-        } else {
-          this.setState({ [stateName + "State"]: "has-danger" });
-        }
-        break;
-      case "url":
-        if (this.verifyUrl(event.target.value)) {
-          this.setState({ [stateName + "State"]: "has-success" });
-        } else {
-          this.setState({ [stateName + "State"]: "has-danger" });
-        }
-        break;
-      case "min-value":
-        if (
-          this.verifyNumber(event.target.value) &&
-          event.target.value >= stateNameEqualTo
-        ) {
-          this.setState({ [stateName + "State"]: "has-success" });
-        } else {
-          this.setState({ [stateName + "State"]: "has-danger" });
-        }
-        break;
-      case "max-value":
-        if (
-          this.verifyNumber(event.target.value) &&
-          event.target.value <= stateNameEqualTo
-        ) {
-          this.setState({ [stateName + "State"]: "has-success" });
-        } else {
-          this.setState({ [stateName + "State"]: "has-danger" });
-        }
-        break;
-      case "range":
-        if (
-          this.verifyNumber(event.target.value) &&
-          event.target.value >= stateNameEqualTo &&
-          event.target.value <= maxValue
-        ) {
-          this.setState({ [stateName + "State"]: "has-success" });
-        } else {
-          this.setState({ [stateName + "State"]: "has-danger" });
-        }
-        break;
       default:
         break;
     }
     this.setState({ [stateName]: event.target.value });
   };
-  registerClick = () => {
-    if (this.state.registerEmailState === "") {
-      this.setState({ registerEmailState: "has-danger" });
-    }
+  passwordChangeClick = () => {
     if (
       this.state.registerPasswordState === "" ||
       this.state.registerConfirmPasswordState === ""
@@ -198,59 +97,43 @@ class ValidationForms extends React.Component {
       this.setState({ registerPasswordState: "has-danger" });
       this.setState({ registerConfirmPasswordState: "has-danger" });
     }
+      this.submitPassword()
   };
-  loginClick = () => {
-    if (this.state.loginFullNameState === "") {
-      this.setState({ loginFullNameState: "has-danger" });
+
+  submitPassword = () => {
+    if (
+      this.state.registerPasswordState !== "has-danger" ||
+      this.state.registerConfirmPasswordState !== "has-danger"
+    ) {
+      this.setState({ registerPasswordState: "has-success" });
+      this.setState({ registerConfirmPasswordState: "has-success" });
+      
+      fire.auth().currentUser.updatePassword(this.state.registerPassword)
+      .then(() => {
+        this.setState({ registerPassword: "success" })
+      })
+      .catch((err) => {
+        console.log(err);
+      })
     }
-    if (this.state.loginEmailState === "") {
-      this.setState({ loginEmailState: "has-danger" });
+  }
+
+  emailChangeClick = () => {
+    if (this.state.registerEmailState === "") {
+      this.setState({ registerEmailState: "has-danger" });
     }
-    if (this.state.loginPasswordState === "") {
-      this.setState({ loginPasswordState: "has-danger" });
+    if (this.state.registerEmailState !== "has-danger") {
+      fire.auth().currentUser.updateEmail(this.state.registerEmail)
+      .then(() => {
+        this.setState({ registerEmailState: "success" });
+      })
+      .catch((err) => {
+        console.log(err);
+      })
     }
+    
   };
-  typeClick = () => {
-    if (this.state.requiredState === "") {
-      this.setState({ requiredState: "has-danger" });
-    }
-    if (this.state.emailState === "") {
-      this.setState({ emailState: "has-danger" });
-    }
-    if (this.state.numberState === "") {
-      this.setState({ numberState: "has-danger" });
-    }
-    if (this.state.urlState === "") {
-      this.setState({ urlState: "has-danger" });
-    }
-    if (this.state.sourceState === "" || this.state.destinationState === "") {
-      this.setState({ sourceState: "has-danger" });
-      this.setState({ destinationState: "has-danger" });
-    }
-  };
-  rangeClick = () => {
-    if (this.state.minLengthState === "") {
-      this.setState({ minLengthState: "has-danger" });
-    }
-    if (this.state.maxLengthState === "") {
-      this.setState({ maxLengthState: "has-danger" });
-    }
-    if (this.state.rangeState === "") {
-      this.setState({ rangeState: "has-danger" });
-    }
-    if (this.state.minValueState === "") {
-      this.setState({ minValueState: "has-danger" });
-    }
-    if (this.state.maxValueState === "") {
-      this.setState({ maxValueState: "has-danger" });
-    }
-    if (this.state.minState === "") {
-      this.setState({ minState: "has-danger" });
-    }
-    if (this.state.maxState === "") {
-      this.setState({ maxState: "has-danger" });
-    }
-  };
+
   render() {
     // taking all the states
     let {
@@ -264,10 +147,10 @@ class ValidationForms extends React.Component {
         <div className="content">
           <Row>
             <Col md="12">
-              <Form id="RegisterValidation">
+              <Form id="EmailChangeValidation">
                 <Card>
                   <CardHeader>
-                    <CardTitle tag="h4">Register Form</CardTitle>
+                    <CardTitle tag="h4">Change Email</CardTitle>
                   </CardHeader>
                   <CardBody>
                     <FormGroup className={`has-label ${registerEmailState}`}>
@@ -275,6 +158,7 @@ class ValidationForms extends React.Component {
                       <Input
                         name="email"
                         type="email"
+                        value={this.state.registerEmail}
                         onChange={e => this.change(e, "registerEmail", "email")}
                       />
                       {this.state.registerEmailState === "has-danger" ? (
@@ -283,7 +167,26 @@ class ValidationForms extends React.Component {
                         </label>
                       ) : null}
                     </FormGroup>
-                    <FormGroup className={`has-label ${registerPasswordState}`}>
+                    {this.state.registerEmailState === "success" ? (
+                        <label className="text-success">
+                          Email Successful Changed
+                        </label>
+                      ) : null}
+                  </CardBody>
+                  <CardFooter className="text-left">
+                    <Button color="primary" onClick={this.emailChangeClick}>
+                      Save
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </Form>
+              <Form id="PasswordChangeValidation">
+                <Card>
+                  <CardHeader>
+                    <CardTitle tag="h4">Change Password</CardTitle>
+                  </CardHeader>
+                  <CardBody>
+                  <FormGroup className={`has-label ${registerPasswordState}`}>
                       <label>Password *</label>
                       <Input
                         id="registerPassword"
@@ -322,12 +225,14 @@ class ValidationForms extends React.Component {
                         <label className="error">This field is required.</label>
                       ) : null}
                     </FormGroup>
-                    <div className="category form-category">
-                      * Required fields
-                    </div>
+                    {this.state.registerPassword === "success" ? (
+                        <label className="text-success">
+                          Password Successful Changed
+                        </label>
+                      ) : null}
                   </CardBody>
                   <CardFooter className="text-left">
-                    <Button color="primary" onClick={this.registerClick}>
+                    <Button color="primary" onClick={this.passwordChangeClick}>
                       Save
                     </Button>
                   </CardFooter>
@@ -341,4 +246,10 @@ class ValidationForms extends React.Component {
   }
 }
 
-export default ValidationForms;
+const mapStateToProps = (state) => {
+  return {
+      auth: state.firebase.auth
+  }
+}
+
+export default connect(mapStateToProps)(ValidationForms);

@@ -125,28 +125,6 @@ const routes = [
     ]
   },
   {
-    collapse: true,
-    name: "Tables",
-    icon: "tim-icons icon-puzzle-10",
-    state: "tablesCollapse",
-    views: [
-      {
-        path: "/extended-tables",
-        name: "Extended Tables",
-        mini: "ET",
-        component: ExtendedTables,
-        layout: "/admin"
-      },
-      {
-        path: "/react-tables",
-        name: "React Tables",
-        mini: "RT",
-        component: ReactTables,
-        layout: "/admin"
-      }
-    ]
-  },
-  {
     path: "/charts",
     name: "Charts",
     icon: "tim-icons icon-chart-bar-32",

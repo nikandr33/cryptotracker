@@ -27,3 +27,21 @@ export const deleteCoin = (coinId) => {
         })
     }
 }
+
+export const changeCoin = (coinId, {coin_info, amount, buy_price, date_buy, currency}) => {
+    return (dispatch, getState, { getFirebase, getFirestore }) => {
+        const firestore = getFirestore();
+
+        firestore.collection("coins").doc(coinId).update({
+            coin_info: coin_info,
+            amount: amount,
+            buy_price: buy_price,
+            date_buy: date_buy,
+            currency: currency
+        }).then(() => {
+            dispatch({ type: "UPDATE_COIN" });
+        }).catch((err) => {
+            dispatch({ type: "UPDATE_COIN_ERROR", err });
+        })
+    }
+}

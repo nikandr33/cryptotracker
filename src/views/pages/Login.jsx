@@ -13,11 +13,17 @@ import {
   InputGroupText,
   InputGroup,
   Container,
-  Col
+  Col,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  FormGroup,
+  Input,
+  ModalFooter
 } from "reactstrap";
 
 import { Link } from "react-router-dom";
-
+import fire from "../../fire"
 import { connect } from "react-redux";
 import { signIn } from "../../store/actions/authActions";
 
@@ -26,13 +32,36 @@ class Login extends React.Component {
     super(props);
     this.state = {
       email: '',
-      password: ''
+      password: '',
+      modal: false,
+      recoveryStatus: null
     }
+    this.recovery = this.recovery.bind(this);
   }
 
   login(e) {
     e.preventDefault();
-    this.props.signIn(this.state);
+    let user = {};
+    user.email = this.state.email;
+    user.password = this.state.password;
+    this.props.signIn(user);
+  }
+
+  recovery = () => {
+    fire.auth().sendPasswordResetEmail(this.state.email)
+    .then(() => {
+      this.setState({ recoveryStatus: "Recovery letter successful sended to your email." })
+    }).catch((err) => {
+      this.setState({ recoveryStatus: err.message })
+    });
+    
+  }
+
+  toggle = e => {
+    e.preventDefault();
+    this.setState(prevState => ({
+      modal: !prevState.modal
+    }));
   }
 
   handleChange(e) {
@@ -49,6 +78,24 @@ class Login extends React.Component {
     const { signInError } = this.props; 
     return (
       <>
+        <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+          <ModalHeader toggle={this.toggle}>Recovery Password</ModalHeader>
+          <ModalBody>
+              <Form action="#">
+                  <label>Email</label>
+                  <FormGroup>
+                      <Input type="text" onChange={e => this.handleChange(e)} name="email" value={this.state.email} />
+                  </FormGroup>
+              </Form>
+              <label>
+                {this.state.recoveryStatus}
+              </label>
+          </ModalBody>
+          <ModalFooter>
+              <Button color="primary" onClick={() => this.recovery()}>Sumbit</Button>{' '}
+              <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+          </ModalFooter>
+        </Modal>
         <div className="content">
           <Container>
             <Col className="ml-auto mr-auto" lg="4" md="6">
@@ -119,9 +166,9 @@ class Login extends React.Component {
                         <a
                           className="link footer-link"
                           href="#pablo"
-                          onClick={e => e.preventDefault()}
+                          onClick={(e) => this.toggle(e)}
                         >
-                          Need Help?
+                          Forgot your password?
                         </a>
                       </h6>
                     </div>

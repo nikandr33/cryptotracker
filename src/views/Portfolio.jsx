@@ -60,7 +60,9 @@ class Portfolio extends React.Component {
       dataCoins: [],
       date: "",
       amount: null,
-      buy_price: null
+      buy_price: null,
+      currency: null
+
     };
     this.toggle = this.toggle.bind(this);
     this.toggleAddCoinModal = this.toggleAddCoinModal.bind(this);
@@ -143,10 +145,11 @@ class Portfolio extends React.Component {
 
   submitAddCoin(pid) {
     let coin = {};
-    coin.coin_id = this.state.idCoin;
+    coin.coin_info = this.state.idCoin;
     coin.amount = this.state.amount;
     coin.buy_price = this.state.buy_price;
     coin.date_buy = this.state.date;
+    coin.currency = this.state.currency;
     this.props.addCoin(coin, pid);
     this.toggleAddCoinModal();
   }
@@ -187,7 +190,7 @@ class Portfolio extends React.Component {
     }
 
     const TabBody = () => {
-      
+
       return (
         this.props.portfolios && this.props.portfolios.map((prop, key) => {
           if(this.props.user.uid === prop.uid) {
@@ -240,10 +243,11 @@ class Portfolio extends React.Component {
                                 <th>Coin</th>
                                 <th>Buy Price</th>
                                 <th className="text-center">Amount</th>
-                                <th className="text-center">Totall Value</th>
+                                <th className="text-center">Holding</th>
                                 <th className="text-right">Profit/Loss</th>
-                                <th className="text-right">Date Buy</th>
                                 <th className="text-right">Change</th>
+                                <th className="text-right">Date Buy</th>
+                                <th className="text-right"></th>
                               </tr>
                             </thead>
                             <tfoot>
@@ -255,6 +259,7 @@ class Portfolio extends React.Component {
                                 <th></th>
                                 <th className="text-center">20000</th>
                                 <th className="text-right">$2000</th>
+                                <th className="text-right"></th>
                                 <th className="text-right"></th>
                                 <th className="text-right"></th>
                               </tr>
@@ -329,7 +334,7 @@ class Portfolio extends React.Component {
                                 <Select
                                   className="react-select info"
                                   classNamePrefix="react-select"
-                                  name="selectCoin"
+                                  name="idCoin"
                                   value={this.state.idCoin}
                                   onChange={value =>
                                     this.setState({ idCoin: value })
@@ -354,7 +359,9 @@ class Portfolio extends React.Component {
                                     <Input type="text" onChange={e => this.handleChange(e)} name="buy_price" value={this.state.buy_price} />
                                 </FormGroup>
                               </Col>
-                              <Col className="mt-2">
+                              </Row>
+                              <Row>
+                              <Col lg="6" md="6" sm="6" className="mt-2">
                                 <label>Bought On</label>
                                 <FormGroup>
                                   <ReactDatetime
@@ -367,6 +374,28 @@ class Portfolio extends React.Component {
                                     name="date"
                                     selected={ this.state.date }
                                     onChange={ this.handleChangeDatePicker }
+                                  />
+                                </FormGroup>
+                              </Col>
+                              <Col lg="6" md="6" sm="6" className="mt-2">
+                                <label>Currency</label>
+                                <FormGroup>
+                                  <Select
+                                    className="react-select info"
+                                    classNamePrefix="react-select"
+                                    name="currency"
+                                    value={this.state.currency}
+                                    onChange={value =>
+                                      this.setState({ currency: value })
+                                    }
+                                    options={[
+                                      { value: "1", label: "USD" },
+                                      { value: "2", label: "RUB" },
+                                      { value: "4", label: "BTC" },
+                                      { value: "5", label: "ETH" },
+                                      { value: "5", label: "USDT" },
+                                    ]}
+                                    placeholder="Choose Currency"
                                   />
                                 </FormGroup>
                               </Col>

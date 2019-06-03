@@ -78,8 +78,8 @@ class Dashboard extends React.Component {
                 <CardHeader>
                   <Row>
                     <Col className="text-left" sm="6">
-                      <h5 className="card-category">Total Shipments</h5>
-                      <CardTitle tag="h2">Performance</CardTitle>
+                      <h5 className="card-category">History currencys of</h5>
+                      <CardTitle tag="h2">Bitcoin</CardTitle>
                     </Col>
                     <Col sm="6">
                       <ButtonGroup
@@ -98,10 +98,10 @@ class Dashboard extends React.Component {
                         >
                           <input defaultChecked name="options" type="radio" />
                           <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                            Accounts
+                            1d
                           </span>
                           <span className="d-block d-sm-none">
-                            <i className="tim-icons icon-single-02" />
+                            1d
                           </span>
                         </Button>
                         <Button
@@ -116,10 +116,10 @@ class Dashboard extends React.Component {
                         >
                           <input name="options" type="radio" />
                           <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                            Purchases
+                            7d
                           </span>
                           <span className="d-block d-sm-none">
-                            <i className="tim-icons icon-gift-2" />
+                            7d
                           </span>
                         </Button>
                         <Button
@@ -134,10 +134,10 @@ class Dashboard extends React.Component {
                         >
                           <input name="options" type="radio" />
                           <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                            Sessions
+                            30d
                           </span>
                           <span className="d-block d-sm-none">
-                            <i className="tim-icons icon-tap-02" />
+                            30d
                           </span>
                         </Button>
                       </ButtonGroup>

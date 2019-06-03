@@ -10,7 +10,7 @@ const authReducer = (state = initState, action) => {
                 ...state,
                 signInError: action.err
             }
-        case 'LOGIN_SUCCES':
+        case 'LOGIN_SUCCESS':
             return {
                 ...state,
                 signInError: null
@@ -20,7 +20,7 @@ const authReducer = (state = initState, action) => {
                 ...state,
                 signUpError: action.err
             }
-        case 'REGISTERATION_SUCCES':
+        case 'REGISTERATION_SUCCESS':
             return {
                 ...state,
                 signUpError: null
