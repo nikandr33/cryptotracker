@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Form, Input } from 'reactstrap';
-
+import Select from "react-select";
 import { connect } from "react-redux";
 
 import { createPortfolio } from "../store/actions/portfolioActions";
@@ -12,7 +12,8 @@ class CreatePortfolio extends React.Component {
             modal: false,
             unmountOnClose: true,
             name: "",
-            description: ""
+            description: "",
+            exchange: ""
         };
 
         this.toggle = this.toggle.bind(this);
@@ -30,7 +31,8 @@ class CreatePortfolio extends React.Component {
         let portf = {};
         portf.name = this.state.name;
         portf.desc = this.state.description;
-        this.setState({ name: "", description: ""})
+        portf.exchange = this.state.exchange;
+        this.setState({ name: "", description: "", exchange: ""})
         this.props.createPortfolio(portf)
     }
     
@@ -59,6 +61,27 @@ class CreatePortfolio extends React.Component {
                             <label>Description</label>
                             <FormGroup>
                                 <Input type="textarea" onChange={e => this.handleChange(e)} name="description" value={this.state.description} />
+                            </FormGroup>
+                            <label>Exchange</label>
+                            <FormGroup>
+                                <Select
+                                    className="react-select info"
+                                    classNamePrefix="react-select"
+                                    name="exchange"
+                                    value={this.state.exchange}
+                                    onChange={value =>
+                                        this.setState({ exchange: value })
+                                    }
+                                    options={[
+                                        { value: "0", label: "None" },
+                                        { value: "1", label: "Binance" },
+                                        { value: "2", label: "EXMO" },
+                                        { value: "4", label: "Bitfinex" },
+                                        { value: "5", label: "KuCoin" },
+                                        { value: "5", label: "Bitforex" },
+                                    ]}
+                                    placeholder="Choose Exchange"
+                                />
                             </FormGroup>
                         </Form>
                     </ModalBody>

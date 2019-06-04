@@ -65,7 +65,7 @@ const getData1d = () => {
       date1dArr.push(hour)
       data1dArr.push(item.close)
     })
-    date1dArr.splice(-2,2)
+    date1dArr.splice(0,2)
   })
 }
 

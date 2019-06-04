@@ -53,32 +53,43 @@ class PortfolioCoin extends React.Component {
         }));
       }
 
-    calculateEconomy() {
-        let url = "https://min-api.cryptocompare.com/data/top/exchanges/full?fsym=" + this.props.coin.coin_info.symb + "&tsym=" + this.props.coin.currency.label;
+    calculateEconomy({exchange, coin}) {
+        let exchangeUrl = "";
+        if(exchange !== "" && exchange.label !== "None" && coin.currency.label !== "RUB" && coin.currency.label !== "USD") {
+            exchangeUrl = "&e=" + exchange.label;
+        }
+        let url = "https://min-api.cryptocompare.com/data/price?fsym=" + coin.coin_info.symb + "&tsyms=" + coin.currency.label + exchangeUrl;
         axios.get(url)
         .then(res => {
-            let hold = parseInt(this.props.coin.amount,10) * res.data.Data.AggregatedData.PRICE;
-            let pl = Math.abs((parseInt(this.props.coin.amount,10) * parseInt(this.props.coin.buy_price)) - (parseInt(this.props.coin.amount,10) * res.data.Data.AggregatedData.PRICE));
-            let chng = ( Math.abs(parseInt(this.props.coin.buy_price) - res.data.Data.AggregatedData.PRICE) *100)/res.data.Data.AggregatedData.PRICE;
-            pl = parseInt(hold,10) > parseInt(this.props.coin.buy_price,10) ? pl : -pl;
-            chng = parseInt(hold,10) > parseInt(this.props.coin.buy_price,10) ? Math.abs(chng) : -Math.abs(chng);
-            hold = hold > 1 ? number_format(hold, 2, '.', ' ') : number_format(hold, 6, '.', ' ');
-            chng = number_format(chng, 2, '.', ' ');
-            pl = number_format(pl, 2, '.', ' ')
-            
-            this.setState({ holding: hold, change: chng, profit_loss: pl })
+            if(res) {
+                let curr = 0;
+                curr = res.data[coin.currency.label]
+                let hold = 0;
+                hold = coin.amount * curr;
+                let pl = 0;
+                pl = Math.abs(hold - (coin.amount * coin.buy_price));
+                let chng = 0;
+                chng = Math.abs((coin.buy_price - curr) *100) / curr;
+                pl = hold > coin.buy_price ? pl : -pl;
+                chng = hold > coin.buy_price ? Math.abs(chng) : -Math.abs(chng);
+                hold = hold > 1 ? number_format(hold, 2, '.', ' ') : number_format(hold, 6, '.', ' ');
+                chng = number_format(chng, 2, '.', ' ');
+                pl = pl > 1 ? number_format(pl, 2, '.', ' ') : number_format(pl, 6, '.', ' ');
+                
+                this.setState({ holding: hold, change: chng, profit_loss: pl })
+            }
         })
     }
 
     componentWillMount() {
-        this.calculateEconomy();
+        this.calculateEconomy(this.props);
         this.getCoinsData();
     }
 
-    componentWillUpdate() {
-        this.calculateEconomy();
+    componentWillReceiveProps(nextProps) {
+        this.calculateEconomy(nextProps);
     }
-    
+
     getCoinsData () {
         axios.get("https://min-api.cryptocompare.com/data/top/mktcapfull?limit=100&tsym=USD&api_key=eb9a602cceebc71a33b56cbefc89a9152428c3532464077f3d775ee3d315c670")
         .then(res => this.setState({ dataCoins: res.data.Data }))
@@ -151,57 +162,57 @@ class PortfolioCoin extends React.Component {
                         </Row>
                         <Row>
                             <Col className="mt-2" lg="6" md="6" sm="6">
-                            <label>Amount</label>
-                            <FormGroup>
-                                <Input type="text" onChange={e => this.handleChange(e)} name="amount" value={this.state.amount} />
-                            </FormGroup>
+                                <label>Amount</label>
+                                <FormGroup>
+                                    <Input type="text" onChange={e => this.handleChange(e)} name="amount" value={this.state.amount} />
+                                </FormGroup>
                             </Col>
                             <Col className="mt-2" lg="6" md="6" sm="6">
-                            <label>Buy Price</label>
-                            <FormGroup>
-                                <Input type="text" onChange={e => this.handleChange(e)} name="buy_price" value={this.state.buy_price} />
-                            </FormGroup>
+                                <label>Buy Price</label>
+                                <FormGroup>
+                                    <Input type="text" onChange={e => this.handleChange(e)} name="buy_price" value={this.state.buy_price} />
+                                </FormGroup>
                             </Col>
-                            </Row>
-                            <Row>
+                        </Row>
+                        <Row>
                             <Col lg="6" md="6" sm="6" className="mt-2">
-                            <label>Bought On</label>
-                            <FormGroup>
-                                <ReactDatetime
-                                inputProps={{
-                                    className: "form-control",
-                                    placeholder: "Date Picker Here"
-                                }}
-                                timeFormat={false}
-                                dateFormat={"DD/MM/YYYY"}
-                                name="date"
-                                value={ this.state.date !== null ? moment(this.state.date.toDate()).format('DD/MM/YYYY') : null }
-                                selected={ this.state.date }
-                                onChange={ this.handleChangeDatePicker }
-                                />
-                            </FormGroup>
+                                <label>Bought On</label>
+                                <FormGroup>
+                                    <ReactDatetime
+                                        inputProps={{
+                                            className: "form-control",
+                                            placeholder: "Date Picker Here"
+                                        }}
+                                        timeFormat={false}
+                                        dateFormat={"DD/MM/YYYY"}
+                                        name="date"
+                                        value={ this.state.date !== null ? moment(this.state.date.toDate()).format('DD/MM/YYYY') : null }
+                                        selected={ this.state.date }
+                                        onChange={ this.handleChangeDatePicker }
+                                    />
+                                </FormGroup>
                             </Col>
                             <Col lg="6" md="6" sm="6" className="mt-2">
-                            <label>Currency</label>
-                            <FormGroup>
-                                <Select
-                                className="react-select info"
-                                classNamePrefix="react-select"
-                                name="currency"
-                                value={this.state.currency}
-                                onChange={value =>
-                                    this.setState({ currency: value })
-                                }
-                                options={[
-                                    { value: "1", label: "USD" },
-                                    { value: "2", label: "RUB" },
-                                    { value: "4", label: "BTC" },
-                                    { value: "5", label: "ETH" },
-                                    { value: "5", label: "USDT" },
-                                ]}
-                                placeholder="Choose Currency"
-                                />
-                            </FormGroup>
+                                <label>Currency</label>
+                                <FormGroup>
+                                    <Select
+                                        className="react-select info"
+                                        classNamePrefix="react-select"
+                                        name="currency"
+                                        value={this.state.currency}
+                                        onChange={value =>
+                                            this.setState({ currency: value })
+                                        }
+                                        options={[
+                                            { value: "1", label: "USD" },
+                                            { value: "2", label: "RUB" },
+                                            { value: "4", label: "BTC" },
+                                            { value: "5", label: "ETH" },
+                                            { value: "5", label: "USDT" },
+                                        ]}
+                                        placeholder="Choose Currency"
+                                    />
+                                </FormGroup>
                             </Col>
                         </Row>
                         </Form>

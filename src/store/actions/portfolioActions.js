@@ -27,13 +27,14 @@ export const deletePortfolio = (portfolioId) => {
     }
 }
 
-export const changePortfolio = (portfolioId, {name, desc}) => {
+export const changePortfolio = (portfolioId, {name, desc, exchange}) => {
     return (dispatch, getState, { getFirebase, getFirestore }) => {
         const firestore = getFirestore();
 
         firestore.collection("portfolio").doc(portfolioId).update({
             name: name,
-            desc: desc
+            desc: desc,
+            exchange: exchange
         }).then(() => {
             dispatch({ type: "UPDATE_PORTFOLIO" });
         }).catch((err) => {

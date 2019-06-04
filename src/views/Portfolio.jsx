@@ -61,7 +61,8 @@ class Portfolio extends React.Component {
       date: "",
       amount: null,
       buy_price: null,
-      currency: null
+      currency: null,
+      exchange: null
 
     };
     this.toggle = this.toggle.bind(this);
@@ -110,7 +111,7 @@ class Portfolio extends React.Component {
   getPortfolioData(id) {
     this.props.portfolios.map((item) => {
       if(item.id === id) {
-        this.setState({ name: item.name, description: item.desc }, () => this.toggle())
+        this.setState({ name: item.name, description: item.desc, exchange: item.exchange }, () => this.toggle())
       }
     })
   }
@@ -119,6 +120,7 @@ class Portfolio extends React.Component {
     let temp = {};
     temp.name = this.state.name;
     temp.desc = this.state.description;
+    temp.exchange = this.state.exchange;
     this.props.changePortfolio(id, temp);
     this.toggle();
   }
@@ -189,8 +191,21 @@ class Portfolio extends React.Component {
       )
     }
 
-    const TabBody = () => {
+    const nameExchange = ex => {
+      if(ex !== "")
+        return <span> | Exchange: {ex.label} </span>
+      else 
+        return <span> | Exchange: None </span>
+    } 
 
+    const portfolioDescr = descr => {
+      if(descr !== "")
+        return <>| <i>{descr}</i></>
+      else
+        return "";
+    }
+
+    const TabBody = () => {
       return (
         this.props.portfolios && this.props.portfolios.map((prop, key) => {
           if(this.props.user.uid === prop.uid) {
@@ -232,7 +247,7 @@ class Portfolio extends React.Component {
                               </DropdownMenu>
                             </UncontrolledDropdown>
                           </div>
-                          <CardTitle tag="h4">{prop.name} | <i>{prop.desc}</i></CardTitle>
+                          <CardTitle tag="h4">{prop.name} {portfolioDescr(prop.desc)} {nameExchange(prop.exchange)} </CardTitle>
                         </CardHeader>
                         <CardBody>
                           <Table responsive>
@@ -250,24 +265,10 @@ class Portfolio extends React.Component {
                                 <th className="text-right"></th>
                               </tr>
                             </thead>
-                            <tfoot>
-                              <tr>
-                                <th className="text-center"></th>
-                                <th className="text-center"></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th className="text-center">20000</th>
-                                <th className="text-right">$2000</th>
-                                <th className="text-right"></th>
-                                <th className="text-right"></th>
-                                <th className="text-right"></th>
-                              </tr>
-                            </tfoot>
                             <tbody>
                               {this.props.coins && this.props.coins.map((coin, key) => {
                                 if(coin.pid === prop.id) {
-                                  return (<PortfolioCoin coin={coin} num={key} key={key} />)
+                                  return (<PortfolioCoin exchange={prop.exchange} coin={coin} num={key} key={key} />)
                                 }
                               })}
                             </tbody>
@@ -317,6 +318,27 @@ class Portfolio extends React.Component {
                               <FormGroup>
                                   <Input type="textarea" onChange={e => this.handleChange(e)} name="description" value={this.state.description} />
                               </FormGroup>
+                              <label>Exchange</label>
+                              <FormGroup>
+                                <Select
+                                    className="react-select info"
+                                    classNamePrefix="react-select"
+                                    name="exchange"
+                                    value={this.state.exchange}
+                                    onChange={value =>
+                                        this.setState({ exchange: value })
+                                    }
+                                    options={[
+                                        { value: "0", label: "None" },
+                                        { value: "1", label: "Binance" },
+                                        { value: "2", label: "EXMO" },
+                                        { value: "4", label: "Bitfinex" },
+                                        { value: "5", label: "KuCoin" },
+                                        { value: "5", label: "Bitforex" },
+                                    ]}
+                                    placeholder="Choose Exchange"
+                                />
+                            </FormGroup>
                           </Form>
                       </ModalBody>
                       <ModalFooter>
