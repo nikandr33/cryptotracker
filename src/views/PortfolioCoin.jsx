@@ -17,7 +17,7 @@ import {
 
 import Select from "react-select";
 import ReactDatetime from "react-datetime";
-
+import ReactBSAlert from "react-bootstrap-sweetalert";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
 
@@ -25,12 +25,13 @@ import axios from "axios";
 
 import { changeCoin, deleteCoin } from "../store/actions/coinsActions";
 
-import { number_format, decimalAdjust} from "../format_numbers"
+import { number_format } from "../format_numbers"
 
 class PortfolioCoin extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            alert: null,
             modal: false,
             holding: null,
             change: null,
@@ -47,17 +48,65 @@ class PortfolioCoin extends React.Component {
         this.handleChangeDatePicker = this.handleChangeDatePicker.bind(this);
     }
 
+    warningOnDeleteCoin = id => {
+        this.setState({
+            alert: (
+                <ReactBSAlert
+                warning
+                style={{ display: "block", marginTop: "-100px" }}
+                title="Are you sure?"
+                onConfirm={() => this.successDelete(id)}
+                onCancel={() => this.hideAlert()}
+                confirmBtnBsStyle="success"
+                cancelBtnBsStyle="danger"
+                confirmBtnText="Yes, delete it!"
+                cancelBtnText="Cancel"
+                showCancel
+                btnSize=""
+                >
+                    You will not be able to recover this coin!
+                </ReactBSAlert>
+            )
+        });
+    };
+
+    successDelete = id => {
+        this.props.deleteCoin(id);
+        this.setState({
+            alert: (
+            <ReactBSAlert
+                success
+                style={{ display: "block", marginTop: "-100px" }}
+                title="Deleted!"
+                onConfirm={() => this.hideAlert()}
+                onCancel={() => this.hideAlert()}
+                confirmBtnBsStyle="success"
+                btnSize=""
+            >
+                Coin has been deleted.
+            </ReactBSAlert>
+            )
+        });
+    };
+
+    hideAlert = () => {
+        this.setState({
+            alert: null
+        });
+    };
+
     toggle() {
         this.setState(prevState => ({
             modal: !prevState.modal
         }));
-      }
+    }
 
     calculateEconomy({exchange, coin}) {
         let exchangeUrl = "";
         if(exchange !== "" && exchange.label !== "None" && coin.currency.label !== "RUB" && coin.currency.label !== "USD") {
             exchangeUrl = "&e=" + exchange.label;
         }
+
         let url = "https://min-api.cryptocompare.com/data/price?fsym=" + coin.coin_info.symb + "&tsyms=" + coin.currency.label + exchangeUrl;
         axios.get(url)
         .then(res => {
@@ -70,11 +119,16 @@ class PortfolioCoin extends React.Component {
                 pl = Math.abs(hold - (coin.amount * coin.buy_price));
                 let chng = 0;
                 chng = Math.abs((coin.buy_price - curr) *100) / curr;
-                pl = hold > coin.buy_price ? pl : -pl;
-                chng = hold > coin.buy_price ? Math.abs(chng) : -Math.abs(chng);
+                pl = curr > coin.buy_price ? pl : -pl;
+                chng = curr > coin.buy_price ? Math.abs(chng) : -Math.abs(chng);
                 hold = hold > 1 ? number_format(hold, 2, '.', ' ') : number_format(hold, 6, '.', ' ');
                 chng = number_format(chng, 2, '.', ' ');
-                pl = pl > 1 ? number_format(pl, 2, '.', ' ') : number_format(pl, 6, '.', ' ');
+                
+                if(pl > 1 || pl < -1) {
+                    pl = number_format(pl, 2, '.', ' ')
+                } else {
+                    pl = number_format(pl, 4, '.', '')
+                } 
                 
                 this.setState({ holding: hold, change: chng, profit_loss: pl })
             }
@@ -228,8 +282,9 @@ class PortfolioCoin extends React.Component {
         return (
         <>
             {modal()}
+            {this.state.alert}
             <tr>
-                <td>{this.props.num + 1}</td>
+                <td>{this.props.num}</td>
                 <td className="text-center">
                     <div className="photo">
                         <img
@@ -244,7 +299,7 @@ class PortfolioCoin extends React.Component {
                 <td className="text-center">{this.state.holding} {this.currencyToSymb(this.props.coin.currency.label)}</td>
                 <td className="text-right">{this.state.profit_loss} {this.currencyToSymb(this.props.coin.currency.label)}</td>
                 <td className="text-right">{this.state.change} %</td>
-                <td className="text-right">{this.props.coin.date_buy !== null ? moment(this.props.coin.date_buy.toDate()).format('DD/MM/YYYY') : null }</td>
+                <td className="text-right">{this.props.coin.date_buy !== "" ? moment(this.props.coin.date_buy.toDate()).format('DD/MM/YYYY') : null }</td>
                 <td className="text-right">
                     <Button
                         className="btn-link btn-icon"
@@ -266,7 +321,7 @@ class PortfolioCoin extends React.Component {
                         color="danger"
                         id={"tooltip" + this.props.num+1}
                         size="sm"
-                        onClick={() => this.props.deleteCoin(this.props.coin.id)}
+                        onClick={() => this.warningOnDeleteCoin(this.props.coin.id)}
                     >
                         <i className="tim-icons icon-simple-remove" />
                     </Button>

@@ -46,11 +46,7 @@ class Portfolio extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      horizontalTabs: "profile",
-      verticalTabs: "profile",
-      verticalTabsIcons: "home",
       pageTabs: "1",
-      openedCollapses: ["collapseOne"],
       alert: null,
       modal: false,
       modalAddCoin: false,
@@ -69,26 +65,44 @@ class Portfolio extends React.Component {
     this.toggleAddCoinModal = this.toggleAddCoinModal.bind(this);
     this.handleChangeDatePicker = this.handleChangeDatePicker.bind(this);
   }
-  inputAlert = () => {
+  warningOnDeletePortfolio = id => {
     this.setState({
       alert: (
         <ReactBSAlert
-          input
-          showCancel
+          warning
           style={{ display: "block", marginTop: "-100px" }}
-          title="Input portfolio name:"
-          onConfirm={e => this.inputConfirmAlert(e)}
+          title="Are you sure?"
+          onConfirm={() => this.successDelete(id)}
           onCancel={() => this.hideAlert()}
           confirmBtnBsStyle="success"
           cancelBtnBsStyle="danger"
+          confirmBtnText="Yes, delete it!"
+          cancelBtnText="Cancel"
+          showCancel
           btnSize=""
-        />
+        >
+          You will not be able to recover your portfolio!
+        </ReactBSAlert>
       )
     });
   };
-  inputConfirmAlert = e => {
-    this.setState({ portfolioName: e, alert: null });
-    setTimeout(this.inputConfirmAlertNext, 200);
+  successDelete = id => {
+    this.props.deletePortfolio(id);
+    this.setState({
+      alert: (
+        <ReactBSAlert
+          success
+          style={{ display: "block", marginTop: "-100px" }}
+          title="Deleted!"
+          onConfirm={() => this.hideAlert()}
+          onCancel={() => this.hideAlert()}
+          confirmBtnBsStyle="success"
+          btnSize=""
+        >
+          Your portfolio has been deleted.
+        </ReactBSAlert>
+      )
+    });
   };
   hideAlert = () => {
     this.setState({
@@ -137,6 +151,10 @@ class Portfolio extends React.Component {
 
   componentWillMount() {
     this.getCoinsData();
+    if(this.props.portfolios) {
+      if(this.props.portfolios.find(portfolio => portfolio.uid === this.props.user.uid))
+        this.setState({ pageTabs: this.props.portfolios.find(portfolio => portfolio.uid === this.props.user.uid).id })
+    }
   }
 
   getCoinsData () {
@@ -209,6 +227,7 @@ class Portfolio extends React.Component {
       return (
         this.props.portfolios && this.props.portfolios.map((prop, key) => {
           if(this.props.user.uid === prop.uid) {
+            let countCoin = 0;
             return (
               <TabPane key={key} tabId={prop.id}>
                 <div className="content">
@@ -240,7 +259,7 @@ class Portfolio extends React.Component {
                                 </DropdownItem>
                                 <DropdownItem
                                   className="text-danger"
-                                  onClick={() => this.props.deletePortfolio(prop.id)}
+                                  onClick={() => this.warningOnDeletePortfolio(prop.id)} 
                                 >
                                   Delete Portfolio
                                 </DropdownItem>
@@ -268,7 +287,8 @@ class Portfolio extends React.Component {
                             <tbody>
                               {this.props.coins && this.props.coins.map((coin, key) => {
                                 if(coin.pid === prop.id) {
-                                  return (<PortfolioCoin exchange={prop.exchange} coin={coin} num={key} key={key} />)
+                                  countCoin++;
+                                  return (<PortfolioCoin exchange={prop.exchange} coin={coin} num={countCoin} key={key} />)
                                 }
                               })}
                             </tbody>
@@ -305,7 +325,7 @@ class Portfolio extends React.Component {
                     activeTab={this.state.pageTabs}
                   >
                     {TabBody()}
-
+                    {this.state.alert}
                     <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
                       <ModalHeader toggle={this.toggle}>Portfolio Changing Form</ModalHeader>
                       <ModalBody>

@@ -31,7 +31,9 @@ class Register extends React.Component {
     super(props);
     this.state = {
       email: '',
-      password: ''
+      password: '',
+      confirmPassword: '',
+      registerError: ''
     }
   }
 
@@ -41,7 +43,15 @@ class Register extends React.Component {
 
   signup(e) {
     e.preventDefault();
-    this.props.signUp(this.state);
+    if(this.state.password === this.state.confirmPassword) {
+      this.setState({ registerError: '' })
+      let user = {};
+      user.email = this.state.email;
+      user.password = this.state.password; 
+      this.props.signUp(user);
+    } else {
+      this.setState({ registerError: "Passwords do not match." })
+    }
   }
 
   componentDidMount() {
@@ -98,18 +108,24 @@ class Register extends React.Component {
                           onChange={e => this.handleChange(e)}
                         />
                       </InputGroup>
-                      <FormGroup check className="text-left">
-                        <Label check>
-                          <Input type="checkbox" />
-                          <span className="form-check-sign" />I agree to the{" "}
-                          <a href="#pablo" onClick={e => e.preventDefault()}>
-                            terms and conditions
-                          </a>
-                          .
-                        </Label>
-                      </FormGroup>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="tim-icons icon-lock-circle" />
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <input 
+                          value={this.state.confirmPassword}
+                          name="confirmPassword"
+                          type="password" 
+                          placeholder="Confirm Password" 
+                          className="form-control"
+                          onChange={e => this.handleChange(e)}
+                        />
+                      </InputGroup>
                     </Form>
                     {signUpError ? <span className="text-danger font-weight-bold">{signUpError.message}</span> : null}
+                    {this.state.registerError ? <span className="text-danger font-weight-bold">{this.state.registerError}</span> : null}
                   </CardBody>
                   <CardFooter className="mt-0">
                     <Button

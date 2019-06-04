@@ -26,7 +26,7 @@ class Pages extends React.Component {
     });
   };
   getActiveRoute = routes => {
-    let activeRoute = "Default Brand Text";
+    let activeRoute = "";
     for (let i = 0; i < routes.length; i++) {
       if (routes[i].collapse) {
         let collapseActiveRoute = this.getActiveRoute(routes[i].views);
@@ -48,16 +48,12 @@ class Pages extends React.Component {
   getFullPageName = routes => {
     let pageName = this.getActiveRoute(routes);
     switch (pageName) {
-      case "Pricing":
-        return "pricing-page";
       case "Login":
-        return "login-page";
+        return "login";
       case "Register":
-        return "register-page";
-      case "Lock Screen":
-        return "lock-page";
+        return "register";
       default:
-        return "Default Brand Text";
+        return "";
     }
   };
   componentDidMount() {
@@ -66,7 +62,7 @@ class Pages extends React.Component {
   render() {
     return (
       <>
-        <AuthNavbar brandText={this.getActiveRoute(routes) + " Page"} />
+        <AuthNavbar brandText={this.getActiveRoute(routes)} />
         <div className="wrapper wrapper-full-page" ref="fullPages">
           <div className={"full-page " + this.getFullPageName(routes)}>
             <Switch>{this.getRoutes(routes)}</Switch>

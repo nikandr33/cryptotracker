@@ -2,8 +2,6 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
-// react plugin for creating notifications over the dashboard
-import NotificationAlert from "react-notification-alert";
 
 // core components
 import AdminNavbar from "../../components/Navbars/AdminNavbar.jsx";
@@ -22,7 +20,7 @@ class Admin extends React.Component {
     super(props);
     this.state = {
       activeColor: "blue",
-      sidebarMini: true,
+      sidebarMini: false,
       opacity: 0,
       sidebarOpened: false
     };
@@ -117,23 +115,12 @@ class Admin extends React.Component {
     this.setState({ activeColor: color });
   };
   handleMiniClick = () => {
-    let notifyMessage = "Sidebar mini ";
     if (document.body.classList.contains("sidebar-mini")) {
       this.setState({ sidebarMini: false });
-      notifyMessage += "deactivated...";
     } else {
       this.setState({ sidebarMini: true });
-      notifyMessage += "activated...";
     }
-    let options = {};
-    options = {
-      place: "tr",
-      message: notifyMessage,
-      type: "primary",
-      icon: "tim-icons icon-bell-55",
-      autoDismiss: 7
-    };
-    this.refs.notificationAlert.notificationAlert(options);
+
     document.body.classList.toggle("sidebar-mini");
   };
   toggleSidebar = () => {
@@ -152,7 +139,6 @@ class Admin extends React.Component {
     return (
       <div className="wrapper">
         <div className="rna-container">
-          <NotificationAlert ref="notificationAlert" />
         </div>
         <div
           className="navbar-minimize-fixed"

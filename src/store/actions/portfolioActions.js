@@ -21,6 +21,18 @@ export const deletePortfolio = (portfolioId) => {
 
         firestore.collection("portfolio").doc(portfolioId).delete().then(() => {
             dispatch({ type: "DELETE_PORTFOLIO" });
+            firestore.collection("coins").where("pid","==",portfolioId).get()
+            .then((snap) => {
+                snap.docs.forEach(doc => {
+                    firestore.collection("coins").doc(doc.id).delete()
+                    .then(res => {
+                        console.log("all good) and deleted");
+                    })
+                })
+            })
+            .catch((err) => {
+                console.log(err)
+            })
         }).catch((err) => {
             dispatch({ type: "DELETE_PORTFOLIO_ERROR", err });
         })
